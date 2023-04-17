@@ -55,7 +55,10 @@ function Sidebar({ showSidebar, onSendShowSidebar }) {
                                     key={index}
                                     className={cx('link', `${activeItem === index && 'active'}`)}
                                     to={item.to}
-                                    onClick={() => setActiveItem(index)}
+                                    onClick={() => {
+                                        setActiveItem(index);
+                                        onSendShowSidebar(!showSidebar);
+                                    }}
                                 >
                                     <item.icon className={cx('icon')} />
                                     {item.title}

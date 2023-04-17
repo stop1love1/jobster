@@ -1,16 +1,17 @@
 import { memo } from 'react';
 import { InterviewsScheduledIcon, JobsDeclinedIcon, PendingApplicationsIcon } from '@/components/Icons';
+
 import classNames from 'classnames/bind';
 import styles from './Stats.module.scss';
 
 const cx = classNames.bind(styles);
 
-function DashBoard() {
+function DashBoard({ data }) {
     return (
         <section className={cx('sc')}>
             <article className={cx('item')}>
                 <header>
-                    <span className={cx('count')}>24</span>
+                    <span className={cx('count')}>{data ? data.pending : 0}</span>
                     <span className={cx('icon-img')}>
                         <PendingApplicationsIcon className={cx('icon')} />
                     </span>
@@ -19,7 +20,7 @@ function DashBoard() {
             </article>
             <article className={cx('item')}>
                 <header>
-                    <span className={cx('count')}>27</span>
+                    <span className={cx('count')}>{data ? data.interview : 0}</span>
                     <span className={cx('icon-img')}>
                         <InterviewsScheduledIcon className={cx('icon')} />
                     </span>
@@ -28,7 +29,7 @@ function DashBoard() {
             </article>
             <article className={cx('item')}>
                 <header>
-                    <span className={cx('count')}>24</span>
+                    <span className={cx('count')}>{data ? data.declined : 0}</span>
                     <span className={cx('icon-img')}>
                         <JobsDeclinedIcon className={cx('icon')} />
                     </span>

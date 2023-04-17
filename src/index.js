@@ -4,13 +4,16 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import GlobalStyles from './GlobalStyles';
 import Notifications from './components/Notifications';
+import { AuthProvider } from './context/AuthContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>
         <GlobalStyles>
             <Notifications>
-                <App />
+                <AuthProvider>
+                    <App />
+                </AuthProvider>
             </Notifications>
         </GlobalStyles>
     </React.StrictMode>,

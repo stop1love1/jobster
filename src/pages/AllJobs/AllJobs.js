@@ -1,11 +1,59 @@
+import { useCallback, useState, useEffect } from 'react';
+import { useDebounce } from '@/hooks';
+import ListJobs from './ListJobs';
+import { getJobs } from '@/utils/requestHttp';
+import Loading from '@/components/Loading';
+import Pagination from './Paginations';
 import classNames from 'classnames/bind';
 import styles from './AllJobs.module.scss';
-import { BagIcon, FlyingArrowIcon, NextIcon, PrevIcon, ScheduleIcon } from '@/components/Icons';
-import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
 function AllJobs() {
+    const [data, setData] = useState([]);
+    const [search, setSearch] = useState('');
+    const [status, setStatus] = useState('all');
+    const [jobType, setJobType] = useState('all');
+    const [sort, setSort] = useState('latest');
+    const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(false);
+
+    const debouncedSearchTerm = useDebounce(search);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            const result = await getJobs(debouncedSearchTerm, status, jobType, sort, page);
+            setData(result);
+            setLoading(false);
+            setPage(1);
+        };
+        fetchData();
+    }, [debouncedSearchTerm, status, jobType, sort, page]);
+
+    const handlePaging = useCallback(
+        async (activePage) => {
+            setPage(activePage);
+            setLoading(true);
+            setData(await getJobs(search, status, jobType, sort, activePage));
+            setLoading(false);
+        },
+        [search, status, jobType, sort],
+    );
+
+    const handleSearch = (value) => {
+        setSearch(value);
+    };
+
+    const handleClear = (e) => {
+        e.preventDefault();
+        setSearch('');
+        setStatus('all');
+        setJobType('all');
+        setSort('latest');
+        setPage(1);
+    };
+
     return (
         <div className={cx('all-jobs', 'container')}>
             <div className={cx('page')}>
@@ -14,11 +62,23 @@ function AllJobs() {
                     <div className={cx('form-center')}>
                         <div className={cx('form-row')}>
                             <label className={cx('form-label')}>search</label>
-                            <input id="search" type="text" name="search" className={cx('form-input')} defaultValue="" />
+                            <input
+                                id="search"
+                                type="text"
+                                name="search"
+                                className={cx('form-input')}
+                                defaultValue=""
+                                onChange={(e) => handleSearch(e.target.value)}
+                            />
                         </div>
                         <div className={cx('form-row')}>
                             <label className={cx('form-label')}>status</label>
-                            <select name="searchStatus" id="searchStatus" className={cx('form-select')}>
+                            <select
+                                name="searchStatus"
+                                id="searchStatus"
+                                className={cx('form-select')}
+                                onChange={(e) => setStatus(e.target.value)}
+                            >
                                 <option value="all">all</option>
                                 <option value="interview">interview</option>
                                 <option value="declined">declined</option>
@@ -27,7 +87,12 @@ function AllJobs() {
                         </div>
                         <div className={cx('form-row')}>
                             <label className={cx('form-label')}>type</label>
-                            <select name="searchType" id="searchType" className={cx('form-select')}>
+                            <select
+                                name="searchType"
+                                id="searchType"
+                                className={cx('form-select')}
+                                onChange={(e) => setJobType(e.target.value)}
+                            >
                                 <option value="all">all</option>
                                 <option value="full-time">full-time</option>
                                 <option value="part-time">part-time</option>
@@ -37,202 +102,39 @@ function AllJobs() {
                         </div>
                         <div className={cx('form-row')}>
                             <label className={cx('form-label')}>sort</label>
-                            <input id="search" type="text" name="search" className={cx('form-input')} defaultValue="" />
+                            <select
+                                name="sort"
+                                id="sort"
+                                className="form-select"
+                                onChange={(e) => setSort(e.target.value)}
+                            >
+                                <option value="latest">latest</option>
+                                <option value="oldest">oldest</option>
+                                <option value="a-z">a-z</option>
+                                <option value="z-a">z-a</option>
+                            </select>
                         </div>
-                        <button className={cx('btn', 'btn-danger', 'btn-block', 'clear-btn')}>clear filters</button>
+                        <button
+                            type="submit"
+                            className={cx('btn', 'btn-danger', 'btn-block', 'clear-btn')}
+                            onClick={handleClear}
+                        >
+                            clear filters
+                        </button>
                     </div>
                 </form>
-                <section className={cx('sc')}>
-                    <h5>75 jobs found</h5>
-                    <div className={cx('jobs')}>
-                        <article className={cx('job-item')}>
-                            <header>
-                                <div className={cx('main-icon')}>B</div>
-                                <div className={cx('info')}>
-                                    <h5>Civil Engineer</h5>
-                                    <p>Bechtelar-Bednar</p>
-                                </div>
-                            </header>
-                            <div className={cx('content')}>
-                                <div className={cx('content-center')}>
-                                    <div className={cx('content-item')}>
-                                        <span>
-                                            <FlyingArrowIcon className={cx('icon')} />
-                                        </span>
-                                        <span className={cx('text')}>Kiamba</span>
-                                    </div>
-                                    <div className={cx('content-item')}>
-                                        <span>
-                                            <ScheduleIcon className={cx('icon')} />
-                                        </span>
-                                        <span className={cx('text')}>Dec 27th, 2021</span>
-                                    </div>
-                                    <div className={cx('content-item')}>
-                                        <span>
-                                            <BagIcon className={cx('icon')} />
-                                        </span>
-                                        <span className={cx('text')}>Internship</span>
-                                    </div>
-                                    <div className={cx('status', 'declined')}>declined</div>
-                                </div>
-                            </div>
-                            <footer>
-                                <div className={cx('actions')}>
-                                    <Link className={cx('btn', 'edit-btn')}>Edit</Link>
-                                    <button className={cx('btn', 'delete-btn')}>delete</button>
-                                </div>
-                            </footer>
-                        </article>
-                        <article className={cx('job-item')}>
-                            <header>
-                                <div className={cx('main-icon')}>B</div>
-                                <div className={cx('info')}>
-                                    <h5>Civil Engineer</h5>
-                                    <p>Bechtelar-Bednar</p>
-                                </div>
-                            </header>
-                            <div className={cx('content')}>
-                                <div className={cx('content-center')}>
-                                    <div className={cx('content-item')}>
-                                        <span>
-                                            <FlyingArrowIcon className={cx('icon')} />
-                                        </span>
-                                        <span className={cx('text')}>Kiamba</span>
-                                    </div>
-                                    <div className={cx('content-item')}>
-                                        <span>
-                                            <ScheduleIcon className={cx('icon')} />
-                                        </span>
-                                        <span className={cx('text')}>Dec 27th, 2021</span>
-                                    </div>
-                                    <div className={cx('content-item')}>
-                                        <span>
-                                            <BagIcon className={cx('icon')} />
-                                        </span>
-                                        <span className={cx('text')}>Internship</span>
-                                    </div>
-                                    <div className={cx('status', 'declined')}>declined</div>
-                                </div>
-                            </div>
-                            <footer>
-                                <div className={cx('actions')}>
-                                    <Link className={cx('btn', 'edit-btn')}>Edit</Link>
-                                    <button className={cx('btn', 'delete-btn')}>delete</button>
-                                </div>
-                            </footer>
-                        </article>
-                        <article className={cx('job-item')}>
-                            <header>
-                                <div className={cx('main-icon')}>B</div>
-                                <div className={cx('info')}>
-                                    <h5>Civil Engineer</h5>
-                                    <p>Bechtelar-Bednar</p>
-                                </div>
-                            </header>
-                            <div className={cx('content')}>
-                                <div className={cx('content-center')}>
-                                    <div className={cx('content-item')}>
-                                        <span>
-                                            <FlyingArrowIcon className={cx('icon')} />
-                                        </span>
-                                        <span className={cx('text')}>Kiamba</span>
-                                    </div>
-                                    <div className={cx('content-item')}>
-                                        <span>
-                                            <ScheduleIcon className={cx('icon')} />
-                                        </span>
-                                        <span className={cx('text')}>Dec 27th, 2021</span>
-                                    </div>
-                                    <div className={cx('content-item')}>
-                                        <span>
-                                            <BagIcon className={cx('icon')} />
-                                        </span>
-                                        <span className={cx('text')}>Internship</span>
-                                    </div>
-                                    <div className={cx('status', 'declined')}>declined</div>
-                                </div>
-                            </div>
-                            <footer>
-                                <div className={cx('actions')}>
-                                    <Link className={cx('btn', 'edit-btn')}>Edit</Link>
-                                    <button className={cx('btn', 'delete-btn')}>delete</button>
-                                </div>
-                            </footer>
-                        </article>
-                        <article className={cx('job-item')}>
-                            <header>
-                                <div className={cx('main-icon')}>B</div>
-                                <div className={cx('info')}>
-                                    <h5>Civil Engineer</h5>
-                                    <p>Bechtelar-Bednar</p>
-                                </div>
-                            </header>
-                            <div className={cx('content')}>
-                                <div className={cx('content-center')}>
-                                    <div className={cx('content-item')}>
-                                        <span>
-                                            <FlyingArrowIcon className={cx('icon')} />
-                                        </span>
-                                        <span className={cx('text')}>Kiamba</span>
-                                    </div>
-                                    <div className={cx('content-item')}>
-                                        <span>
-                                            <ScheduleIcon className={cx('icon')} />
-                                        </span>
-                                        <span className={cx('text')}>Dec 27th, 2021</span>
-                                    </div>
-                                    <div className={cx('content-item')}>
-                                        <span>
-                                            <BagIcon className={cx('icon')} />
-                                        </span>
-                                        <span className={cx('text')}>Internship</span>
-                                    </div>
-                                    <div className={cx('status', 'declined')}>declined</div>
-                                </div>
-                            </div>
-                            <footer>
-                                <div className={cx('actions')}>
-                                    <Link className={cx('btn', 'edit-btn')}>Edit</Link>
-                                    <button className={cx('btn', 'delete-btn')}>delete</button>
-                                </div>
-                            </footer>
-                        </article>
-                    </div>
-                </section>
-                <section className={cx('pagination')}>
-                    <button className={cx('prev-btn')}>
-                        <PrevIcon /> prev
-                    </button>
-                    <div className="btn-container">
-                        <button type="button" className={cx('pageBtn', 'active')}>
-                            1
-                        </button>
-                        <button type="button" className={cx('pageBtn')}>
-                            2
-                        </button>
-                        <button type="button" className={cx('pageBtn')}>
-                            3
-                        </button>
-                        <button type="button" className={cx('pageBtn')}>
-                            4
-                        </button>
-                        <button type="button" className={cx('pageBtn')}>
-                            5
-                        </button>
-                        <button type="button" className={cx('pageBtn')}>
-                            6
-                        </button>
-                        <button type="button" className={cx('pageBtn')}>
-                            7
-                        </button>
-                        <button type="button" className={cx('pageBtn')}>
-                            8
-                        </button>
-                    </div>
-                    <button className={cx('next-btn')}>
-                        <NextIcon /> next
-                    </button>
-                </section>
+
+                {data && !loading ? (
+                    <>
+                        <section className={cx('sc')}>
+                            <h5>{data.totalJobs} jobs found</h5>
+                            <ListJobs data={data.jobs} />
+                        </section>
+                        <Pagination numOfPages={data.numOfPages} currentPage={page} onSendPage={handlePaging} />
+                    </>
+                ) : (
+                    <Loading />
+                )}
             </div>
         </div>
     );

@@ -7,14 +7,15 @@ import Landing from '@/pages/Landing';
 import Register from '@/Register';
 
 const publicRoutes = [
-    { path: config.routes.stats, component: Stats, layout: true },
-    { path: config.routes.allJobs, component: AllJobs, layout: true },
-    { path: config.routes.addJobs, component: AddJob, layout: true },
-    { path: config.routes.profile, component: Profile, layout: true },
-    { path: config.routes.landing, component: Landing, layout: false },
-    { path: config.routes.register, component: Register, layout: false },
+    { path: config.routes.landing, component: Landing },
+    { path: config.routes.register, component: Register },
 ];
 
-const privateRoutes = [];
+const privateRoutes = [
+    { path: config.routes.stats, component: Stats, isPrivate: true },
+    { path: config.routes.allJobs, component: AllJobs, isPrivate: true },
+    { path: config.routes.addJobs, component: AddJob, isPrivate: true },
+    { path: config.routes.profile, component: Profile, sPrivate: true },
+];
 
 export { publicRoutes, privateRoutes };
