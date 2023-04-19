@@ -45,6 +45,10 @@ function AllJobs() {
         setSearch(value);
     };
 
+    const handleDelete = (id) => {
+        setData({ ...data, totalJobs: data.jobs.length - 1, jobs: data.jobs.filter((job) => job._id !== id) });
+    };
+
     const handleClear = (e) => {
         e.preventDefault();
         setSearch('');
@@ -132,7 +136,7 @@ function AllJobs() {
                             <>
                                 <section className={cx('sc')}>
                                     <h5>{data.totalJobs} jobs found</h5>
-                                    <ListJobs data={data.jobs} />
+                                    <ListJobs data={data.jobs} onSendDelete={handleDelete} />
                                 </section>
                                 <Pagination numOfPages={data.numOfPages} currentPage={page} onSendPage={handlePaging} />
                             </>

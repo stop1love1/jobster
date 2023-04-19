@@ -9,10 +9,11 @@ import styles from './AllJobs.module.scss';
 
 const cx = classNames.bind(styles);
 
-function ListJobs({ data = [] }) {
+function ListJobs({ data = [], onSendDelete }) {
     const { setCurrentJob } = useContext(JobContext);
     const handleDelete = async (id) => {
         await deleteJob(id);
+        onSendDelete(id);
     };
 
     return (
