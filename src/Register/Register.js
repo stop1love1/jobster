@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import images from '@/assets';
-import { demo } from '@/services/auth';
+import { demo, login, register } from '@/services/auth';
 import { AuthContext } from '@/context/AuthContext';
 import config from '@/config/config';
 import classNames from 'classnames/bind';
@@ -15,6 +15,10 @@ function Register() {
     const [status, setStatus] = useState(true);
     const [loading, setLoading] = useState(false);
 
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
     const demoApp = async () => {
         setLoading(true);
         const res = await demo();
@@ -25,6 +29,25 @@ function Register() {
         }
     };
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        if (!status) {
+            const res = await register(name, email, password);
+            if (res) {
+                setIsAuthenticated(true);
+                navigate(config.routes.stats);
+            }
+        } else {
+            const res = await login(email, password);
+            if (res) {
+                setIsAuthenticated(true);
+                navigate(config.routes.stats);
+            }
+        }
+        setLoading(false);
+    };
+
     return (
         <section className={cx('sc')}>
             <form className={cx('form', 'wrapper')}>
@@ -33,18 +56,39 @@ function Register() {
                 {!status && (
                     <div className="form-row">
                         <label className="form-label">name</label>
-                        <input id="name" type="text" name="name" className="form-input" defaultValue="" />
+                        <input
+                            id="name"
+                            type="text"
+                            name="name"
+                            className="form-input"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
                     </div>
                 )}
                 <div className="form-row">
                     <label className="form-label">email</label>
-                    <input id="email" type="email" name="email" className="form-input" defaultValue="" />
+                    <input
+                        id="email"
+                        type="email"
+                        name="email"
+                        className="form-input"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
                 </div>
                 <div className="form-row">
                     <label className="form-label">password</label>
-                    <input id="password" type="password" name="password" className="form-input" defaultValue="" />
+                    <input
+                        id="password"
+                        type="password"
+                        name="password"
+                        className="form-input"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
                 </div>
-                <button type="submit" className={cx('btn', 'btn-block', 'button')}>
+                <button type="submit" className={cx('btn', 'btn-block', 'button')} onClick={handleSubmit}>
                     {loading ? 'Loading...' : 'submit'}
                 </button>
                 <button type="button" className={cx('btn btn-block btn-hipster', 'button')} onClick={() => demoApp()}>

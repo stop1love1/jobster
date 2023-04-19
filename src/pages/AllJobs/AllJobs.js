@@ -23,13 +23,13 @@ function AllJobs() {
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
-            const result = await getJobs(debouncedSearchTerm, status, jobType, sort, page);
+            const result = await getJobs(debouncedSearchTerm, status, jobType, sort, 1);
             setData(result);
             setLoading(false);
             setPage(1);
         };
         fetchData();
-    }, [debouncedSearchTerm, status, jobType, sort, page]);
+    }, [debouncedSearchTerm, status, jobType, sort]);
 
     const handlePaging = useCallback(
         async (activePage) => {
@@ -124,16 +124,22 @@ function AllJobs() {
                     </div>
                 </form>
 
-                {data && !loading ? (
-                    <>
-                        <section className={cx('sc')}>
-                            <h5>{data.totalJobs} jobs found</h5>
-                            <ListJobs data={data.jobs} />
-                        </section>
-                        <Pagination numOfPages={data.numOfPages} currentPage={page} onSendPage={handlePaging} />
-                    </>
-                ) : (
+                {loading ? (
                     <Loading />
+                ) : (
+                    <>
+                        {data.totalJobs > 0 ? (
+                            <>
+                                <section className={cx('sc')}>
+                                    <h5>{data.totalJobs} jobs found</h5>
+                                    <ListJobs data={data.jobs} />
+                                </section>
+                                <Pagination numOfPages={data.numOfPages} currentPage={page} onSendPage={handlePaging} />
+                            </>
+                        ) : (
+                            <h2>No job to display...</h2>
+                        )}
+                    </>
                 )}
             </div>
         </div>

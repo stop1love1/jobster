@@ -5,6 +5,7 @@ import reportWebVitals from './reportWebVitals';
 import GlobalStyles from './GlobalStyles';
 import Notifications from './components/Notifications';
 import { AuthProvider } from './context/AuthContext';
+import { UserProvider } from './context/UserContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -12,7 +13,9 @@ root.render(
         <GlobalStyles>
             <Notifications>
                 <AuthProvider>
-                    <App />
+                    <UserProvider>
+                        <App />
+                    </UserProvider>
                 </AuthProvider>
             </Notifications>
         </GlobalStyles>

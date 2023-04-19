@@ -1,15 +1,19 @@
-import { memo } from 'react';
+import { memo, useContext } from 'react';
+import { Link } from 'react-router-dom';
+import config from '@/config/config';
+import { BagIcon, FlyingArrowIcon, ScheduleIcon } from '@/components/Icons';
+import { JobContext } from '@/context/JobContext';
+import { deleteJob } from '@/services/actions';
 import classNames from 'classnames/bind';
 import styles from './AllJobs.module.scss';
-import { BagIcon, FlyingArrowIcon, ScheduleIcon } from '@/components/Icons';
-import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
-function ListJobs({ data }) {
-    if (!data) {
-        return <h1>No jobs to display...</h1>;
-    }
+function ListJobs({ data = [] }) {
+    const { setCurrentJob } = useContext(JobContext);
+    const handleDelete = async (id) => {
+        await deleteJob(id);
+    };
 
     return (
         <div className={cx('jobs')}>
@@ -47,8 +51,16 @@ function ListJobs({ data }) {
                     </div>
                     <footer>
                         <div className={cx('actions')}>
-                            <Link className={cx('btn', 'edit-btn')}>Edit</Link>
-                            <button className={cx('btn', 'delete-btn')}>delete</button>
+                            <Link
+                                className={cx('btn', 'edit-btn')}
+                                to={config.routes.addJobs}
+                                onClick={() => setCurrentJob(job)}
+                            >
+                                Edit
+                            </Link>
+                            <button className={cx('btn', 'delete-btn')} onClick={() => handleDelete(job._id)}>
+                                delete
+                            </button>
                         </div>
                     </footer>
                 </article>

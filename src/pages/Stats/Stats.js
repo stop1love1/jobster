@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import Chart from '@/components/Chart';
 import DashBoard from './DashBoard';
-import { get } from '@/utils/requestHttp';
+import { GET, request } from '@/utils/requestHttp';
+import config from '@/config/config';
 import classNames from 'classnames/bind';
 import styles from './Stats.module.scss';
 
@@ -12,7 +13,7 @@ function Stats() {
     const [typeChart, setTypeChart] = useState('bar');
 
     useEffect(() => {
-        const getData = async () => setdata(await get('/jobs/stats'));
+        const getData = async () => setdata(await request(GET, config.api.stats));
         getData();
     }, []);
     return (

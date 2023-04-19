@@ -7,15 +7,18 @@ import Button from '@/components/Button';
 import { DownArrowIcon, PersonRoundIcon } from '@/components/Icons';
 import config from '@/config/config';
 import { AuthContext } from '@/context/AuthContext';
+import { UserContext } from '@/context/UserContext';
 
 function Account() {
     const { setIsAuthenticated } = useContext(AuthContext);
+    const { user } = useContext(UserContext);
     const navigate = useNavigate();
     const handleLogout = () => {
         logout();
         setIsAuthenticated(false);
         navigate(config.routes.landing);
     };
+
     return (
         <>
             <Tippy
@@ -32,7 +35,7 @@ function Account() {
             >
                 <div>
                     <Button primary leftIcon={<PersonRoundIcon />} rightIcon={<DownArrowIcon />}>
-                        Test user
+                        {user.name}
                     </Button>
                 </div>
             </Tippy>

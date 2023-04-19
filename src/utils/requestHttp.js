@@ -1,16 +1,47 @@
 import axios from 'axios';
+import config from '@/config';
 
-const token =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MjUxZWZhZDJjZmE3YTI5NjM1MDE3MjUiLCJpYXQiOjE2ODE3NDk3ODYsImV4cCI6MTY4MTgzNjE4Nn0.LhgKDVofZavwNIqKCGQJKcPKndVG17QbtrNXmCDCuHw';
+const baseURL = 'https://jobify-prod.herokuapp.com/api/v1/toolkit';
+
+export const GET = 'GET';
+export const POST = 'POST';
+export const PATCH = 'PATCH';
+export const DELETE = 'DELETE';
 
 const requestHttp = axios.create({
-    baseURL: 'https://jobify-prod.herokuapp.com/api/v1/toolkit',
-    headers: { Accept: 'application/json', 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    baseURL: baseURL,
     timeout: 30 * 1000,
 });
 
-export const get = async (path) => {
-    const response = await requestHttp.get(path);
+export const request = async (action, path, data) => {
+    const token = JSON.parse(localStorage.getItem(config.localStorage.user)).token;
+    let request = axios.create({
+        baseURL: baseURL,
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        timeout: 30 * 1000,
+    });
+    let response = null;
+    switch (action) {
+        case GET:
+            response = await request.get(path);
+            break;
+        case POST:
+            response = await request.post(path, data);
+            break;
+        case PATCH:
+            response = await request.patch(path, data);
+            break;
+        case DELETE:
+            response = await request.delete(path + '/' + data);
+            break;
+        default:
+            console.error('Invalid actions in requestHttp!');
+            break;
+    }
     return response.data;
 };
 
@@ -19,7 +50,7 @@ export const getJobs = async (search = null, status = 'all', jobType = 'all', so
     if (search !== null && search !== '') {
         params = `search=${search}&` + params;
     }
-    return await get(`/jobs?${params}`);
+    return await request(GET, `${config.api.jobs}?${params}`);
 };
 
 export default requestHttp;

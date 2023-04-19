@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { Layout } from 'antd';
 import Header from '@/layouts/Header';
 import Sidebar from '@/layouts/Sidebar';
-import { Layout } from 'antd';
+import { JobProvider } from '@/context/JobContext';
 
 function DefaultLayout({ children }) {
     const [showSidebar, setShowSidebar] = useState(true);
@@ -9,13 +10,15 @@ function DefaultLayout({ children }) {
         setShowSidebar(data);
     };
     return (
-        <div style={{ display: 'flex' }}>
-            <Sidebar showSidebar={showSidebar} onSendShowSidebar={handleShowSidebar} />
-            <Layout>
-                <Header showSidebar={showSidebar} onSendShowSidebar={handleShowSidebar} />
-                {children}
-            </Layout>
-        </div>
+        <JobProvider>
+            <div style={{ display: 'flex' }}>
+                <Sidebar showSidebar={showSidebar} onSendShowSidebar={handleShowSidebar} />
+                <Layout>
+                    <Header showSidebar={showSidebar} onSendShowSidebar={handleShowSidebar} />
+                    {children}
+                </Layout>
+            </div>
+        </JobProvider>
     );
 }
 
