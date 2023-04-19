@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import images from '@/assets';
 import { demo, login, register } from '@/services/auth';
 import { AuthContext } from '@/context/AuthContext';
+import { UserContext } from '@/context/UserContext';
 import config from '@/config/config';
 import classNames from 'classnames/bind';
 import styles from './Register.module.scss';
@@ -12,6 +13,7 @@ const cx = classNames.bind(styles);
 function Register() {
     const navigate = useNavigate();
     const { setIsAuthenticated } = useContext(AuthContext);
+    const { setUser } = useContext(UserContext);
     const [status, setStatus] = useState(true);
     const [loading, setLoading] = useState(false);
 
@@ -25,6 +27,7 @@ function Register() {
         if (res) {
             setLoading(false);
             setIsAuthenticated(true);
+            setUser(JSON.parse(localStorage.getItem(config.localStorage.user)));
             navigate(config.routes.stats);
         }
     };
@@ -36,12 +39,14 @@ function Register() {
             const res = await register(name, email, password);
             if (res) {
                 setIsAuthenticated(true);
+                setUser(JSON.parse(localStorage.getItem(config.localStorage.user)));
                 navigate(config.routes.stats);
             }
         } else {
             const res = await login(email, password);
             if (res) {
                 setIsAuthenticated(true);
+                setUser(JSON.parse(localStorage.getItem(config.localStorage.user)));
                 navigate(config.routes.stats);
             }
         }

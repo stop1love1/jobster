@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
 import styles from './Sidebar.module.scss';
-import { AddJobIcon, AllJobsIcon, CloseIcon, ProfileIcon, StatsIcon } from '@/components/Icons';
+import { AddJobIcon, CloseIcon, ProfileIcon, StatsIcon } from '@/components/Icons';
 import images from '@/assets';
 import { Link } from 'react-router-dom';
 import config from '@/config';
@@ -23,7 +23,9 @@ function Sidebar({ showSidebar, onSendShowSidebar }) {
             <aside className={cx('sidebar', showSidebar && 'active')}>
                 <div className={cx('content')}>
                     <header>
-                        <img src={images.logo} alt="Logo" className={cx('logo')} />
+                        <Link to={config.routes.stats}>
+                            <img src={images.logo} alt="Logo" className={cx('logo')} />
+                        </Link>
                     </header>
                     <nav className={cx('nav-links')}>
                         {items.map((item, index) => (
@@ -47,7 +49,9 @@ function Sidebar({ showSidebar, onSendShowSidebar }) {
                             <CloseIcon />
                         </button>
                         <header>
-                            <img src={images.logo} alt="Logo" className={cx('logo')} />
+                            <Link to={config.routes.stats}>
+                                <img src={images.logo} alt="Logo" className={cx('logo')} />
+                            </Link>
                         </header>
                         <nav className={cx('nav-links')}>
                             {items.map((item, index) => (
